@@ -15,5 +15,20 @@ export LSCOLORS=GxFxCxDxBxegedabagaced
 [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 export PATH="$HOME/bin:$PATH"
 
+# --- Secrets from macOS Keychain ---
+# Usage: Add secrets with:
+#   security add-generic-password -a "$USER" -s "ENV_VAR_NAME" -w "secret_value"
+# They'll auto-load on every new shell.
+
+keychain_env() {
+    local val
+    val=$(security find-generic-password -a "$USER" -s "$1" -w 2>/dev/null) && export "$1"="$val"
+}
+
+# Add your env vars here (keys stored in Keychain, not in this file)
+keychain_env "OPENAI_API_KEY"
+keychain_env "ANTHROPIC_API_KEY"
+keychain_env "GITHUB_TOKEN"
+
 # hai usage dashboard
 alias get-usage="node /Users/I583713/hai-mcp-server/build/get-usage.js"
