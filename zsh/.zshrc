@@ -85,3 +85,87 @@ github() {
         *)            open "https://github.com/$1" ;;
     esac
 }
+
+# WezTerm theme switcher (interactive with arrow keys)
+theme() {
+    local wez="$HOME/.dotfiles/wezterm/.wezterm.lua"
+    local themes=(
+        "Catppuccin Mocha"
+        "Catppuccin Latte"
+        "Catppuccin Frappe"
+        "Catppuccin Macchiato"
+        "Tokyo Night"
+        "Tokyo Night Storm"
+        "Dracula"
+        "Gruvbox Dark"
+        "Gruvbox Light"
+        "Nord"
+        "Solarized Dark"
+        "Solarized Light"
+        "One Dark (Gogh)"
+        "Kanagawa (Gogh)"
+        "rose-pine"
+        "rose-pine-moon"
+    )
+
+    local selected=1
+    local total=${#themes[@]}
+    local key
+
+    # Hide cursor
+    tput civis
+
+    # Draw menu
+    _theme_draw() {
+        tput cup 0 0
+        echo "\033[1mSelect a theme (↑/↓ to navigate, Enter to select, q to quit):\033[0m"
+        echo ""
+        for i in "${!themes[@]}"; do
+            local idx=$((i+1))
+            if [ "$idx" -eq "$selected" ]; then
+                echo "\033[1;36m  ▸ ${themes[$i]}\033[0m"
+            else
+                echo "    ${themes[$i]}"
+            fi
+        done
+    }
+
+    clear
+    _theme_draw
+
+    while true; do
+        read -rsn1 key
+        case "$key" in
+            $'\x1b')
+                read -rsn2 key
+                case "$key" in
+                    '[A') # Up arrow
+                        ((selected--))
+                        [ "$selected" -lt 1 ] && selected=$total
+                        ;;
+                    '[B') # Down arrow
+                        ((selected++))
+                        [ "$selected" -gt "$total" ] && selected=1
+                        ;;
+                esac
+                ;;
+            '') # Enter
+                break
+                ;;
+            q|Q)
+                tput cnorm
+                clear
+                echo "Cancelled."
+                return
+                ;;
+        esac
+        _theme_draw
+    done
+
+    tput cnorm
+    clear
+
+    local chosen="${themes[$((selected-1))]}"
+    sed -i '' "s/config.color_scheme = \".*\"/config.color_scheme = \"$chosen\"/" "$wez"
+    echo "Theme changed to: $chosen"
+}
