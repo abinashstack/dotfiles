@@ -114,46 +114,47 @@ theme() {
 
     # Hide cursor
     tput civis
+    trap 'tput cnorm' EXIT INT TERM
 
     # Draw menu
     _theme_draw() {
-        tput cup 0 0
-        echo "\033[1mSelect a theme (↑/↓ to navigate, Enter to select, q to quit):\033[0m"
+        clear
+        print -P "%B Select a theme (↑/↓ to navigate, Enter to select, q to quit):%b"
         echo ""
-        for i in "${!themes[@]}"; do
-            local idx=$((i+1))
-            if [ "$idx" -eq "$selected" ]; then
-                echo "\033[1;36m  ▸ ${themes[$i]}\033[0m"
+        for i in {1..$total}; do
+            if [ "$i" -eq "$selected" ]; then
+                print -P "  %F{cyan}%B▸ ${themes[$i]}%b%f"
             else
                 echo "    ${themes[$i]}"
             fi
         done
     }
 
-    clear
     _theme_draw
 
     while true; do
-        read -rsn1 key
+        read -rsk1 key
         case "$key" in
-            $'\x1b')
-                read -rsn2 key
+            $'\e')
+                read -rsk1 key
+                read -rsk1 key
                 case "$key" in
-                    '[A') # Up arrow
+                    A) # Up arrow
                         ((selected--))
                         [ "$selected" -lt 1 ] && selected=$total
                         ;;
-                    '[B') # Down arrow
+                    B) # Down arrow
                         ((selected++))
                         [ "$selected" -gt "$total" ] && selected=1
                         ;;
                 esac
                 ;;
-            '') # Enter
+            $'\n') # Enter
                 break
                 ;;
             q|Q)
                 tput cnorm
+                trap - EXIT INT TERM
                 clear
                 echo "Cancelled."
                 return
@@ -163,9 +164,10 @@ theme() {
     done
 
     tput cnorm
+    trap - EXIT INT TERM
     clear
 
-    local chosen="${themes[$((selected-1))]}"
+    local chosen="${themes[$selected]}"
     sed -i '' "s/config.color_scheme = \".*\"/config.color_scheme = \"$chosen\"/" "$wez"
     echo "Theme changed to: $chosen"
 }
