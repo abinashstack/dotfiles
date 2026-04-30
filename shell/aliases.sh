@@ -55,6 +55,10 @@ alias brave="open -a 'Brave Browser'"
 alias safari="open -a 'Safari'"
 alias code="open -a 'Visual Studio Code'"
 alias teams="open -a 'Microsoft Teams'"
+alias excel="open -a 'Microsoft Excel'"
+alias word="open -a 'Microsoft Word'"
+alias ppt="open -a 'Microsoft PowerPoint'"
+alias outlook="open -a 'Microsoft Outlook'"
 alias finder="open ."
 
 # Misc
