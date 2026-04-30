@@ -75,3 +75,13 @@ alias finder="open ."
 alias cls="clear"
 alias ip="curl -s ifconfig.me"
 alias ports="lsof -i -P -n | grep LISTEN"
+
+# GitHub quick open
+github() {
+    case "$1" in
+        abinashstack) open "https://github.com/abinashstack" ;;
+        I583713)      open "https://github.tools.sap/I583713" ;;
+        "")           open "https://github.com/abinashstack" ;;
+        *)            open "https://github.com/$1" ;;
+    esac
+}
