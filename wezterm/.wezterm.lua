@@ -36,7 +36,7 @@ local mocha = {
 -- ==========================================================
 --  COLOR SCHEME
 -- ==========================================================
-config.color_scheme = "Catppuccin Mocha"
+config.color_scheme = "Gruvbox Dark"
 
 -- ==========================================================
 --  FONT  — Nerd Font for icons, colorful font rules

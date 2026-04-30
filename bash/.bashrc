@@ -1,16 +1,10 @@
 # Source shared config (works in both bash and zsh)
 source "$HOME/.dotfiles/shell/aliases.sh"
 
-# --- Zsh-specific ---
-eval "$(starship init zsh)"
+# --- Bash-specific ---
+eval "$(starship init bash)"
 
-# Syntax highlighting
-[ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# Auto-suggestions
-[ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-alias zshrc="$EDITOR ~/.zshrc"
+alias bashrc="$EDITOR ~/.bashrc"
 
 # WezTerm theme switcher (interactive with arrow keys)
 theme() {
@@ -34,7 +28,7 @@ theme() {
         "rose-pine-moon"
     )
 
-    local selected=1
+    local selected=0
     local total=${#themes[@]}
     local key
 
@@ -43,11 +37,11 @@ theme() {
 
     _theme_draw() {
         clear
-        print -P "%B Select a theme (↑/↓ to navigate, Enter to select, q to quit):%b"
+        echo -e "\033[1m Select a theme (↑/↓ to navigate, Enter to select, q to quit):\033[0m"
         echo ""
-        for i in {1..$total}; do
+        for i in "${!themes[@]}"; do
             if [ "$i" -eq "$selected" ]; then
-                print -P "  %F{cyan}%B▸ ${themes[$i]}%b%f"
+                echo -e "  \033[1;36m▸ ${themes[$i]}\033[0m"
             else
                 echo "    ${themes[$i]}"
             fi
@@ -57,17 +51,16 @@ theme() {
     _theme_draw
 
     while true; do
-        read -rsk1 key
+        read -rsn1 key
         case "$key" in
-            $'\e')
-                read -rsk1 key
-                read -rsk1 key
+            $'\x1b')
+                read -rsn2 key
                 case "$key" in
-                    A) ((selected--)); [ "$selected" -lt 1 ] && selected=$total ;;
-                    B) ((selected++)); [ "$selected" -gt "$total" ] && selected=1 ;;
+                    '[A') ((selected--)); [ "$selected" -lt 0 ] && selected=$((total-1)) ;;
+                    '[B') ((selected++)); [ "$selected" -ge "$total" ] && selected=0 ;;
                 esac
                 ;;
-            $'\n') break ;;
+            '') break ;;
             q|Q)
                 tput cnorm; trap - EXIT INT TERM; clear
                 echo "Cancelled."; return ;;

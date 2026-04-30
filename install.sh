@@ -15,9 +15,13 @@ link() {
     echo "Linked $dst → $src"
 }
 
-# Shell
+# Shell — Zsh
 link "$DOTFILES/zsh/.zshrc"             "$HOME/.zshrc"
 link "$DOTFILES/zsh/.zprofile"          "$HOME/.zprofile"
+
+# Shell — Bash
+link "$DOTFILES/bash/.bashrc"           "$HOME/.bashrc"
+link "$DOTFILES/bash/.bash_profile"     "$HOME/.bash_profile"
 
 # Git
 link "$DOTFILES/git/.gitconfig"         "$HOME/.gitconfig"
