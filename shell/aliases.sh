@@ -54,6 +54,7 @@ alias chrome="open -a 'Google Chrome'"
 alias brave="open -a 'Brave Browser'"
 alias safari="open -a 'Safari'"
 alias code="open -a 'Visual Studio Code'"
+alias teams="open -a 'Microsoft Teams'"
 alias finder="open ."
 
 # Misc
