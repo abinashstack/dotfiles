@@ -37,5 +37,21 @@ link "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
 mkdir -p "$HOME/.config/gh"
 link "$DOTFILES/gh/config.yml"          "$HOME/.config/gh/config.yml"
 
+# Network watchdog
+mkdir -p "$HOME/Library/LaunchAgents"
+mkdir -p "$HOME/Library/Logs"
+link "$DOTFILES/launchd/com.abinash.network-watchdog.plist" \
+     "$HOME/Library/LaunchAgents/com.abinash.network-watchdog.plist"
+chmod +x "$DOTFILES/scripts/network-watchdog.sh"
+
 echo ""
 echo "All dotfiles linked."
+echo ""
+
+# Load network watchdog (skip if already loaded)
+if ! launchctl list 2>/dev/null | grep -q "com.abinash.network-watchdog"; then
+    launchctl load "$HOME/Library/LaunchAgents/com.abinash.network-watchdog.plist" 2>/dev/null
+    echo "Loaded network-watchdog LaunchAgent"
+else
+    echo "network-watchdog already loaded"
+fi

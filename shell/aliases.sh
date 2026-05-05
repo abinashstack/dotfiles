@@ -76,3 +76,30 @@ github() {
         *)            open "https://github.com/$1" ;;
     esac
 }
+
+# --- Network Watchdog Shell Integration ---
+alias net-status="cat /tmp/network-watchdog-status 2>/dev/null || echo 'No events'"
+alias net-log="tail -30 ~/Library/Logs/network-watchdog.log"
+alias net-restart="launchctl kickstart -k gui/\$(id -u)/com.abinash.network-watchdog"
+
+_network_watchdog_check() {
+    local status_file="/tmp/network-watchdog-status"
+    [[ -f "$status_file" ]] || return
+    local age=$(( $(date +%s) - $(stat -f%m "$status_file") ))
+    if (( age < 120 )); then
+        local event
+        event=$(cat "$status_file")
+        if [[ "$event" == RECOVERED* ]]; then
+            printf '\033[32m[net] %s\033[0m\n' "$event"
+        elif [[ "$event" == FAILED* ]]; then
+            printf '\033[31m[net] %s\033[0m\n' "$event"
+        fi
+    fi
+}
+
+# Hook into shell prompt
+if [[ -n "${ZSH_VERSION:-}" ]]; then
+    precmd_functions+=(_network_watchdog_check)
+elif [[ -n "${BASH_VERSION:-}" ]]; then
+    PROMPT_COMMAND="_network_watchdog_check${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+fi
